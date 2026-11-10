@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>오늘의 운세 — 마법사의 오라클 서재 (미리보기)</title>
+    <!-- 신비로운 오라클 & 마법서 폰트 (Cinzel Decorative, Cinzel, Noto Serif KR) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Noto+Serif+KR:wght@400;500;600;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- React & ReactDOM & Babel CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- 마크다운 렌더링 라이브러리 (미리보기용) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="./src/app/styles/index.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useCallback, useMemo } = React;
+
+      // 1. Shared UI - Button (마법 룬 & 강력한 호버 효과)
+      const Button = ({
+        children,
+        variant = 'primary',
+        size = 'md',
+        isLoading = false,
+        disabled,
+        className = '',
+        ...props
+      }) => {
+        const baseClass = 'fv-button';
+        const variantClass = `fv-button--${variant}`;
+        const sizeClass = `fv-button--${size}`;
+        const loadingClass = isLoading ? 'fv-button--loading' : '';
+        const combinedClass = [baseClass, variantClass, sizeClass, loadingClass, className]
+          .filter(Boolean)
+          .join(' ');
+
+        return (
+          <button className={combinedClass} disabled={disabled || isLoading} {...props}>
+            <span className="fv-button__shimmer" aria-hidden="true" />
+            <span className="fv-button__border-glow" aria-hidden="true" />
+            {isLoading ? (
+              <span className="fv-button__spinner-wrapper">
+                <span className="fv-button__spinner" aria-hidden="true" />
+                <span>오라클과 교감 중...</span>
+              </span>
+            ) : (
+              <span className="fv-button__content">{children}</span>
+            )}
+          </button>
+        );
+      };
+
+      // 2. Shared UI - TextArea (고대 양피지 스타일)
+      const TextArea = ({
+        label,
+        error,
+        helperText,
+        showCharCount = false,
+        maxLength,
+        value,
+        disabled,
+        className = '',
+        rows = 4,
+        ...props
+      }) => {
+        const currentLength = typeof value === 'string' ? value.length : 0;
+        return (
+          <div className={`fv-textarea-wrapper ${disabled ? 'fv-textarea-wrapper--disabled' : ''}`}>
+            {label && <label className="fv-textarea-label">{label}</label>}
+            <textarea
+              className={`fv-textarea ${error ? 'fv-textarea--error' : ''} ${className}`}
+              value={value}
+              disabled={disabled}
+              maxLength={maxLength}
+              rows={rows}
+              {...props}
+            />
+            <div className="fv-textarea-footer">
+              {error ? (
+                <span className="fv-textarea-error">{error}</span>
+              ) : (
+                helperText && <span className="fv-textarea-helper">{helperText}</span>
+              )}
+              {showCharCount && maxLength && (
+                <span className="fv-textarea-counter">
+                  {currentLength} / {maxLength}
+                </span>
+              )}
+            </div>
+          </div>
+        );
+      };
+
+      // 3. Shared UI - Loading (오라클 수정구 & 마법진 링)
+      const Loading = ({
+        message = '오라클의 고대 수정구가 빛을 발하고 있습니다...',
+        subMessage = '마법사의 서재에 흩어진 별자리와 운명의 서표를 맞추는 중입니다 📜✨',
+        size = 'md',
+        className = '',
+      }) => {
+        return (
+          <div className={`fv-loading fv-loading--${size} ${className}`} role="status" aria-live="polite">
+            <div className="fv-loading__orb-container">
+              <div className="fv-loading__magic-circle fv-loading__magic-circle--outer" />
+              <div className="fv-loading__magic-circle fv-loading__magic-circle--inner" />
+              <div className="fv-loading__orb-glow" />
+              <div className="fv-loading__orb">
+                <span className="fv-loading__eye">👁️‍🗨️</span>
+              </div>
+            </div>
+            {message && <p className="fv-loading__message">{message}</p>}
+            {subMessage && <p className="fv-loading__sub-message">{subMessage}</p>}
+          </div>
+        );
+      };
+
+      // 4. Shared Lib Hooks - useFortuneAI (Gemini API 상태 관리 훅)
+      const useFortuneAI = () => {
+        const [result, setResult] = useState(null);
+        const [is_loading, setIsLoading] = useState(false);
+        const [error, setError] = useState(null);
+
+        const fetchFortune = useCallback(async (promptText, birthInfo) => {
+          setIsLoading(true);
+          setError(null);
+          setResult(null);
+
+          // 미리보기 환경용 모의 응답 시뮬레이션
+          setTimeout(() => {
+            const genderKr = birthInfo?.gender === 'male' ? '남성' : '여성';
+            setResult(
+              `📜 [오라클의 예언 총평]\n` +
+                `${birthInfo?.birthYear}년 ${birthInfo?.birthMonth}월 ${birthInfo?.birthDay}일생 ${genderKr} 의뢰인의 탄생 천체 배치를 확인하였습니다.\n` +
+                `오래된 고서의 양피지가 바스락거리며 황금빛 문장으로 오늘 하루의 흐름을 비춥니다. ` +
+                `현재 당신의 주변에는 긍정적인 변화의 흐름이 감지되며, 오랫동안 고민해온 질문에 대한 명확한 해답이 곧 드러날 길한 시기입니다.\n\n` +
+                `🕯️ [서재의 촛불이 밝히는 조언]\n` +
+                `· 직관을 신뢰하세요: 사소한 우연 속에 당신이 찾던 열쇠가 숨어 있습니다.\n` +
+                `· 음양의 균형: 주변 사람들과의 원활한 소통이 뜻밖의 조력자를 불러옵니다.\n\n` +
+                `✨ [오늘의 수호 아뮬렛]\n` +
+                `· 수호 상징: 불사조의 깃펜과 은빛 나침반\n` +
+                `· 행운의 색상: 미드나이트 바이올렛 & 샴페인 골드\n` +
+                `· 행운의 숫자: 7과 9`
+            );
+            setIsLoading(false);
+          }, 1800);
+        }, []);
+
+        const resetFortune = useCallback(() => {
+          setResult(null);
+          setIsLoading(false);
+          setError(null);
+        }, []);
+
+        return { result, is_loading, error, fetchFortune, resetFortune };
+      };
+
+      // 5. Feature - User_Input (생년, 월, 일, 성별 및 prompt)
+      const UserInput = ({
+        prompt,
+        onChangePrompt,
+        birthYear,
+        onChangeBirthYear,
+        birthMonth,
+        onChangeBirthMonth,
+        birthDay,
+        onChangeBirthDay,
+        gender,
+        onChangeGender,
+        onSubmit,
+        is_loading = false,
+        error,
+        placeholder,
+      }) => {
+        const years = useMemo(() => {
+          const list = [];
+          for (let y = 2026; y >= 1940; y--) list.push(y);
+          return list;
+        }, []);
+
+        const months = useMemo(() => Array.from({ length: 12 }, (_, i) => i + 1), []);
+
+        const days = useMemo(() => {
+          const y = parseInt(birthYear, 10);
+          const m = parseInt(birthMonth, 10);
+          let maxDays = 31;
+          if (m === 4 || m === 6 || m === 9 || m === 11) maxDays = 30;
+          else if (m === 2) {
+            const isLeap = y ? (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0 : false;
+            maxDays = isLeap ? 29 : 28;
+          }
+          return Array.from({ length: maxDays }, (_, i) => i + 1);
+        }, [birthYear, birthMonth]);
+
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          if (is_loading) return;
+          onSubmit();
+        };
+
+        const handleKeyDown = (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            if (is_loading) return;
+            onSubmit();
+          }
+        };
+
+        const isBirthYearMissing = !!error && !birthYear;
+        const isBirthMonthMissing = !!error && !birthMonth;
+        const isBirthDayMissing = !!error && !birthDay;
+        const isGenderMissing = !!error && !gender;
+
+        return (
+          <form className="fv-user-input" onSubmit={handleSubmit}>
+            {/* 사주/별자리 탄생 정보 입력 섹션 */}
+            <div className="fv-birth-section">
+              <div className="fv-birth-section__header">
+                <span className="fv-birth-section__title">
+                  ✦ 의뢰인의 탄생 천체 정보 (생년월일 & 성별)
+                </span>
+                <span className="fv-birth-section__hint">
+                  * 오라클이 정확한 별자리와 음양의 기운을 짚어내기 위해 반드시 필요합니다.
+                </span>
+              </div>
+
+              <div className="fv-birth-grid">
+                <div className="fv-select-wrap">
+                  <label className="fv-select-label">태어난 해 (년)</label>
+                  <select
+                    className={`fv-select ${isBirthYearMissing ? 'fv-select--error' : ''}`}
+                    value={birthYear}
+                    onChange={(e) => onChangeBirthYear(e.target.value)}
+                    disabled={is_loading}
+                  >
+                    <option value="">년도 선택</option>
+                    {years.map((y) => (
+                      <option key={y} value={y}>{y}년</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="fv-select-wrap">
+                  <label className="fv-select-label">태어난 달 (월)</label>
+                  <select
+                    className={`fv-select ${isBirthMonthMissing ? 'fv-select--error' : ''}`}
+                    value={birthMonth}
+                    onChange={(e) => onChangeBirthMonth(e.target.value)}
+                    disabled={is_loading}
+                  >
+                    <option value="">월 선택</option>
+                    {months.map((m) => (
+                      <option key={m} value={m}>{m}월</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="fv-select-wrap">
+                  <label className="fv-select-label">태어난 날 (일)</label>
+                  <select
+                    className={`fv-select ${isBirthDayMissing ? 'fv-select--error' : ''}`}
+                    value={birthDay}
+                    onChange={(e) => onChangeBirthDay(e.target.value)}
+                    disabled={is_loading}
+                  >
+                    <option value="">일 선택</option>
+                    {days.map((d) => (
+                      <option key={d} value={d}>{d}일</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="fv-gender-container">
+                <span className="fv-gender-label">성별 (음양의 조화)</span>
+                <div className={`fv-gender-buttons ${isGenderMissing ? 'fv-gender-buttons--error' : ''}`}>
+                  <button
+                    type="button"
+                    className={`fv-gender-btn ${gender === 'male' ? 'fv-gender-btn--active' : ''}`}
+                    onClick={() => onChangeGender('male')}
+                    disabled={is_loading}
+                  >
+                    <span>♂️</span>
+                    <span>남성 (양의 기운)</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`fv-gender-btn ${gender === 'female' ? 'fv-gender-btn--active' : ''}`}
+                    onClick={() => onChangeGender('female')}
+                    disabled={is_loading}
+                  >
+                    <span>♀️</span>
+                    <span>여성 (음의 기운)</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 질문 텍스트 입력 영역 */}
+            <div className="fv-user-input__field">
+              <TextArea
+                label="📜 양피지에 새길 당신의 질문"
+                value={prompt}
+                onChange={(e) => onChangePrompt(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={
+                  placeholder ||
+                  '예: 오늘 하루 나에게 찾아올 특별한 길운이나 주의해야 할 점은 무엇일까요? 오늘의 운세를 점쳐주세요.'
+                }
+                disabled={is_loading}
+                error={error || undefined}
+                helperText="오늘의 고민이나 궁금한 일을 적어보세요. (Ctrl+Enter 로 즉시 봉인)"
+                maxLength={300}
+                showCharCount
+                rows={4}
+              />
+            </div>
+
+            <div className="fv-user-input__actions">
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                disabled={is_loading}
+                isLoading={is_loading}
+              >
+                ✨ 운세 보기
+              </Button>
+            </div>
+          </form>
+        );
+      };
+
+      // 6. Feature - Fortune_Result
+      const FortuneResult = ({ is_loading, result, prompt, birthInfo, error, onReset }) => {
+        const [isCopied, setIsCopied] = useState(false);
+
+        const buildShareText = () => {
+          if (!result) return '';
+          let headerInfo = '🔮 [Fortune Vibe · 오늘의 오라클 신탁]\n';
+          if (birthInfo && birthInfo.birthYear && birthInfo.birthMonth && birthInfo.birthDay && birthInfo.gender) {
+            const genderKr = birthInfo.gender === 'male' ? '남성 ♂️' : '여성 ♀️';
+            headerInfo += `✦ 의뢰인: ${birthInfo.birthYear}년 ${birthInfo.birthMonth}월 ${birthInfo.birthDay}일생 (${genderKr})\n`;
+          }
+          if (prompt) {
+            headerInfo += `✦ 질문: "${prompt}"\n`;
+          }
+          headerInfo += '───────────────────────────────\n\n';
+          const footerInfo = '\n\n───────────────────────────────\n✨ Fortune Vibe에서 나만의 운명을 확인해 보세요!';
+          return `${headerInfo}${result}${footerInfo}`;
+        };
+
+        const handleCopy = async () => {
+          if (!result) return;
+          const shareText = buildShareText();
+          let success = false;
+
+          if (navigator.clipboard && window.isSecureContext) {
+            try {
+              await navigator.clipboard.writeText(shareText);
+              success = true;
+            } catch (e) {
+              success = false;
+            }
+          }
+
+          if (!success) {
+            const textArea = document.createElement('textarea');
+            textArea.value = shareText;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+              success = document.execCommand('copy');
+            } catch (e) {
+              success = false;
+            }
+            document.body.removeChild(textArea);
+          }
+
+          if (success) {
+            setIsCopied(true);
+            setTimeout(() => setIsCopied(false), 2500);
+          }
+        };
+
+        const handleNativeShare = async () => {
+          if (!result) return;
+          const shareText = buildShareText();
+          if (navigator.share) {
+            try {
+              await navigator.share({
+                title: 'Fortune Vibe 오늘의 운세',
+                text: shareText,
+              });
+            } catch (err) {
+              if (err.name !== 'AbortError') handleCopy();
+            }
+          } else {
+            handleCopy();
+          }
+        };
+
+        if (is_loading) {
+          return (
+            <div className="fv-fortune-result fv-fortune-result--loading">
+              <Loading
+                message="대마법사의 서재에서 고대 비전서를 펼치는 중입니다..."
+                subMessage="별자리 점성판과 룬석이 공명하며 오늘의 운세를 비춥니다 🕯️🔮"
+              />
+            </div>
+          );
+        }
+
+        if (error && !result) {
+          return (
+            <div className="fv-fortune-result fv-fortune-result--error">
+              <div className="fv-fortune-placeholder" style={{ borderColor: 'rgba(239, 68, 68, 0.5)' }}>
+                <div className="fv-fortune-placeholder__icon-wrap">
+                  <span className="fv-fortune-placeholder__icon">⚠️</span>
+                </div>
+                <p className="fv-fortune-placeholder__title" style={{ color: '#f87171' }}>
+                  운명의 신탁을 읽어오지 못했습니다
+                </p>
+                <p className="fv-fortune-placeholder__desc">{error}</p>
+                {onReset && (
+                  <button
+                    type="button"
+                    className="fv-fortune-card__reset-btn"
+                    onClick={onReset}
+                    style={{ marginTop: '8px' }}
+                  >
+                    🔄 다시 시도하기
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        if (result) {
+          const hasBirthInfo =
+            birthInfo && birthInfo.birthYear && birthInfo.birthMonth && birthInfo.birthDay && birthInfo.gender;
+
+          return (
+            <div className="fv-fortune-result fv-fortune-result--ready">
+              <div className="fv-fortune-card">
+                <div className="fv-fortune-card__header">
+                  <div className="fv-fortune-card__seal-wrap">
+                    <span className="fv-fortune-card__seal">ᛟ ᚱ ᚨ ᚲ ᛚ ᛖ</span>
+                    <span className="fv-fortune-card__badge">오늘의 오라클 신탁</span>
+                  </div>
+
+                  {hasBirthInfo && (
+                    <div className="fv-fortune-card__meta">
+                      <span>✦ 의뢰인 천체 정보:</span>
+                      <strong>
+                        {birthInfo.birthYear}년 {birthInfo.birthMonth}월 {birthInfo.birthDay}일 (
+                        {birthInfo.gender === 'male' ? '남성 ♂️' : '여성 ♀️'})
+                      </strong>
+                    </div>
+                  )}
+
+                  {prompt && (
+                    <p className="fv-fortune-card__question">
+                      <strong>Q.</strong> "{prompt}"
+                    </p>
+                  )}
+                </div>
+
+                <div className="fv-fortune-card__body">
+                  <div className="fv-fortune-card__icon-frame">
+                    <div className="fv-fortune-card__icon">📜</div>
+                    <span className="fv-fortune-card__icon-label">Daily Arcane</span>
+                  </div>
+                  <div
+                    className="fv-fortune-card__content fv-markdown-content"
+                    dangerouslySetInnerHTML={{ __html: window.marked ? window.marked.parse(result) : result }}
+                  />
+                </div>
+
+                {/* 결과 카드 하단 액션 바: 복사/공유 & 다시 점치기 */}
+                <div className="fv-fortune-card__footer">
+                  <div className="fv-fortune-actions">
+                    <button
+                      type="button"
+                      className={`fv-action-btn fv-action-btn--copy ${isCopied ? 'fv-action-btn--copied' : ''}`}
+                      onClick={handleCopy}
+                      title="운세 결과를 클립보드에 복사합니다"
+                    >
+                      {isCopied ? (
+                        <>
+                          <span className="fv-action-btn__icon">✨</span>
+                          <span>신탁 복사 완료!</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="fv-action-btn__icon">📋</span>
+                          <span>운세 복사하기</span>
+                        </>
+                      )}
+                    </button>
+
+                    {typeof navigator !== 'undefined' && 'share' in navigator && (
+                      <button
+                        type="button"
+                        className="fv-action-btn fv-action-btn--share"
+                        onClick={handleNativeShare}
+                        title="SNS 및 메신저로 운세 공유하기"
+                      >
+                        <span className="fv-action-btn__icon">🔗</span>
+                        <span>공유하기</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {onReset && (
+                    <button type="button" className="fv-fortune-card__reset-btn" onClick={onReset}>
+                      🕯️ 새로운 질문 점치기
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div className="fv-fortune-result fv-fortune-result--empty">
+            <div className="fv-fortune-placeholder">
+              <div className="fv-fortune-placeholder__icon-wrap">
+                <span className="fv-fortune-placeholder__icon">🕯️</span>
+                <span className="fv-fortune-placeholder__sparkle">✨</span>
+              </div>
+              <p className="fv-fortune-placeholder__title">마법사의 서재에 오신 것을 환영합니다</p>
+              <p className="fv-fortune-placeholder__desc">
+                위 양피지에 생년월일과 성별, 그리고 오늘 하루의 질문을 적고 <strong>[운세 보기]</strong>를 클릭하세요.
+                <br />
+                어둠 속 촛불 아래에서 고대 오라클이 당신의 탄생 별자리와 운명을 꿰뚫어 보는 금빛 전언을 낭독해 드립니다.
+              </p>
+              <div className="fv-fortune-placeholder__runes">
+                ᛟ · ᚱ · ᚨ · ᚲ · ᛚ · ᛖ · ᚠ · ᛟ · ᚱ · ᛏ · ᚢ · ᚾ · ᛖ
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      // 7. Page - Home
+      const HomePage = () => {
+        const [prompt, setPrompt] = useState('');
+        const [birthYear, setBirthYear] = useState('');
+        const [birthMonth, setBirthMonth] = useState('');
+        const [birthDay, setBirthDay] = useState('');
+        const [gender, setGender] = useState('');
+        const [validationError, setValidationError] = useState(null);
+
+        const { result, is_loading, error: apiError, fetchFortune, resetFortune } = useFortuneAI();
+        const displayError = validationError || apiError;
+
+        const handleFortuneRequest = async () => {
+          if (!birthYear || !birthMonth || !birthDay) {
+            setValidationError('📜 오라클이 별자리를 읽어낼 수 있도록 태어난 생년, 월, 일을 모두 선택해 주세요!');
+            return;
+          }
+
+          if (!gender) {
+            setValidationError('📜 음양의 조화와 기운을 살필 수 있도록 성별(남성/여성)을 선택해 주세요!');
+            return;
+          }
+
+          if (!prompt.trim()) {
+            setValidationError('📜 양피지에 마음속 질문을 먼저 적어주셔야 운세의 파동을 짚어낼 수 있습니다.');
+            return;
+          }
+
+          setValidationError(null);
+          await fetchFortune(prompt, { birthYear, birthMonth, birthDay, gender });
+        };
+
+        const handleReset = () => {
+          setPrompt('');
+          setBirthYear('');
+          setBirthMonth('');
+          setBirthDay('');
+          setGender('');
+          setValidationError(null);
+          resetFortune();
+        };
+
+        return (
+          <div className="fv-home-page">
+            <div className="fv-bg-glow fv-bg-glow--candle-left" />
+            <div className="fv-bg-glow fv-bg-glow--candle-right" />
+            <div className="fv-bg-glow fv-bg-glow--arcane-center" />
+            <div className="fv-bg-stars" />
+
+            <main className="fv-main-container">
+              <header className="fv-header">
+                <div className="fv-header__badge">
+                  <span className="fv-header__badge-icon">🔮</span>
+                  <span>THE WIZARD'S SANCTUM · ASTROLOGICAL ORACLE</span>
+                </div>
+
+                <h1 className="fv-header__title">
+                  <span className="fv-text-gold-shine">오늘의 운세</span>
+                </h1>
+
+                <div className="fv-header__divider">
+                  <span className="fv-header__divider-line" />
+                  <span className="fv-header__divider-gem">✦ ᚱ ✦</span>
+                  <span className="fv-header__divider-line" />
+                </div>
+
+                <p className="fv-header__subtitle">
+                  은은한 촛불과 고서 향기가 가득한 대마법사의 서재에 당도하셨습니다.
+                  <br />
+                  당신의 탄생 별자리와 생년월일, 마음속 질문을 양피지에 새겨 오라클의 계시를 구하세요.
+                </p>
+              </header>
+
+              <div className="fv-card fv-card--grimoire">
+                <div className="fv-card__corner fv-card__corner--tl" />
+                <div className="fv-card__corner fv-card__corner--tr" />
+                <div className="fv-card__corner fv-card__corner--bl" />
+                <div className="fv-card__corner fv-card__corner--br" />
+
+                <section className="fv-card__section">
+                  <UserInput
+                    prompt={prompt}
+                    onChangePrompt={(val) => {
+                      setPrompt(val);
+                      if (validationError) setValidationError(null);
+                    }}
+                    birthYear={birthYear}
+                    onChangeBirthYear={(val) => {
+                      setBirthYear(val);
+                      if (validationError) setValidationError(null);
+                    }}
+                    birthMonth={birthMonth}
+                    onChangeBirthMonth={(val) => {
+                      setBirthMonth(val);
+                      if (validationError) setValidationError(null);
+                    }}
+                    birthDay={birthDay}
+                    onChangeBirthDay={(val) => {
+                      setBirthDay(val);
+                      if (validationError) setValidationError(null);
+                    }}
+                    gender={gender}
+                    onChangeGender={(val) => {
+                      setGender(val);
+                      if (validationError) setValidationError(null);
+                    }}
+                    onSubmit={handleFortuneRequest}
+                    is_loading={is_loading}
+                    error={displayError}
+                  />
+                </section>
+
+                <div className="fv-card__separator">
+                  <span className="fv-card__separator-rune">ᛗ ᚨ ᚷ ᛁ ᚲ</span>
+                </div>
+
+                <section className="fv-card__section">
+                  <FortuneResult
+                    is_loading={is_loading}
+                    result={result}
+                    prompt={prompt}
+                    birthInfo={
+                      birthYear && birthMonth && birthDay && gender
+                        ? { birthYear, birthMonth, birthDay, gender }
+                        : undefined
+                    }
+                    error={displayError}
+                    onReset={handleReset}
+                  />
+                </section>
+              </div>
+
+              <footer className="fv-footer">
+                <p className="fv-footer__quote">
+                  "미래는 쓰여진 양피지가 아니라, 당신의 탄생 별빛과 의지가 빚어내는 조화입니다."
+                </p>
+                <p className="fv-footer__copy">
+                  © 2026 오늘의 운세 · Grand Wizard's Arcane Oracle
+                </p>
+              </footer>
+            </main>
+          </div>
+        );
+      };
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<HomePage />);
+    </script>
+  </body>
+</html>

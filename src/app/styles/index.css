@@ -1,0 +1,1345 @@
+/* ==========================================================================
+   Fortune Vibe — Grand Wizard's Arcane Oracle Design System
+   콘셉트: 신비로운 마법사의 서재 (Midnight Purple & Antique Gold)
+   ========================================================================== */
+
+/* 1. 디자인 토큰 & 변수 설정 */
+:root {
+  /* 배경: 어두운 보라색 계열 (Dark Arcane Purple & Midnight Velvet) */
+  --color-bg-deep: #0a0514;
+  --color-bg-base: #110920;
+  --color-bg-study: #190d30;
+  --color-bg-card: rgba(22, 12, 42, 0.88);
+  --color-bg-card-hover: rgba(28, 16, 54, 0.94);
+  --color-bg-parchment: rgba(16, 9, 32, 0.75);
+
+  /* 포인트 색상: 금색 계열 (Antique & Mystic Gold) */
+  --color-gold-bright: #ffd700;
+  --color-gold-main: #f59e0b;
+  --color-gold-antique: #d4af37;
+  --color-gold-dark: #8c6218;
+  --color-gold-glow: rgba(245, 158, 11, 0.45);
+  --color-gold-aura: rgba(255, 215, 0, 0.25);
+
+  /* 보조 마법광: 아케인 바이올렛 & 촛불 앰버 */
+  --color-arcane-violet: #a855f7;
+  --color-arcane-glow: rgba(168, 85, 247, 0.35);
+  --color-candle-amber: rgba(245, 158, 11, 0.2);
+
+  /* 텍스트 색상 */
+  --color-text-gold: #fde68a;
+  --color-text-main: #f5f3ff;
+  --color-text-muted: #c4b5fd;
+  --color-text-dim: #8b7cb6;
+
+  /* 테두리 */
+  --color-border-gold: rgba(212, 175, 55, 0.35);
+  --color-border-gold-bright: rgba(255, 215, 0, 0.75);
+  --color-border-purple: rgba(139, 92, 246, 0.2);
+
+  /* 신비로운 폰트 패밀리 */
+  --font-title: 'Cinzel Decorative', 'Cinzel', 'Noto Serif KR', serif;
+  --font-serif: 'Cinzel', 'Noto Serif KR', 'Nanum Myeongjo', Georgia, serif;
+  --font-body: 'Noto Serif KR', -apple-system, BlinkMacSystemFont, serif;
+
+  /* 라디우스 & 섀도우 */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+
+  --shadow-grimoire: 0 20px 50px -10px rgba(0, 0, 0, 0.85),
+                     0 0 40px -5px rgba(168, 85, 247, 0.25),
+                     inset 0 0 0 1px rgba(212, 175, 55, 0.25);
+  --shadow-gold-hover: 0 0 30px rgba(245, 158, 11, 0.6),
+                       0 0 15px rgba(255, 215, 0, 0.4);
+}
+
+/* 2. 리셋 & 기본 세팅 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-deep);
+  color: var(--color-text-main);
+  min-height: 100vh;
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  background-image: 
+    radial-gradient(1px 1px at 20px 30px, rgba(253, 230, 138, 0.3), rgba(0, 0, 0, 0)),
+    radial-gradient(1px 1px at 150px 80px, rgba(216, 180, 254, 0.25), rgba(0, 0, 0, 0)),
+    radial-gradient(2px 2px at 240px 180px, rgba(245, 158, 11, 0.35), rgba(0, 0, 0, 0));
+  background-size: 300px 300px;
+}
+
+/* 3. 마법사의 서재 레이아웃 & 배경 효과 */
+.fv-home-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 20px;
+  overflow: hidden;
+  background: 
+    radial-gradient(circle at 50% 10%, #2b1150 0%, #150928 45%, #0a0514 90%);
+}
+
+/* 마법사의 서재 촛불 조명 (좌/우) & 중앙 아케인 안개 */
+.fv-bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(100px);
+  z-index: 0;
+}
+
+.fv-bg-glow--candle-left {
+  top: 15%;
+  left: 5%;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.22) 0%, transparent 70%);
+  animation: fv-flicker 4s ease-in-out infinite alternate;
+}
+
+.fv-bg-glow--candle-right {
+  bottom: 15%;
+  right: 5%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(217, 119, 6, 0.2) 0%, transparent 70%);
+  animation: fv-flicker 5s ease-in-out infinite alternate 1.5s;
+}
+
+.fv-bg-glow--arcane-center {
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.18) 0%, transparent 65%);
+}
+
+.fv-bg-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(10, 5, 20, 0.6) 100%);
+  z-index: 0;
+}
+
+.fv-main-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* 4. 헤더: 신비로운 타이포그래피 */
+.fv-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.fv-header__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-serif);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: var(--color-gold-bright);
+  background: rgba(30, 16, 56, 0.75);
+  border: 1px solid var(--color-border-gold);
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.2), inset 0 0 10px rgba(255, 215, 0, 0.1);
+  backdrop-filter: blur(10px);
+  text-transform: uppercase;
+}
+
+.fv-header__badge-icon {
+  font-size: 0.95rem;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
+}
+
+.fv-header__title {
+  font-family: var(--font-title);
+  font-size: 3.2rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  margin: 4px 0;
+}
+
+/* 금박 텍스트 효과 (Gold Foil Shine) */
+.fv-text-gold-shine {
+  background: linear-gradient(
+    135deg,
+    #fff7ed 0%,
+    #fef08a 25%,
+    #d4af37 50%,
+    #b45309 75%,
+    #fef08a 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  filter: drop-shadow(0 2px 14px rgba(212, 175, 55, 0.5));
+  animation: fv-gold-pulse 4s ease-in-out infinite;
+}
+
+.fv-header__divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.fv-header__divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold-antique), transparent);
+}
+
+.fv-header__divider-gem {
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  color: var(--color-gold-bright);
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 10px var(--color-gold-bright);
+}
+
+.fv-header__subtitle {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  color: var(--color-text-muted);
+  max-width: 540px;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+/* 5. 마법서(Grimoire) 카드 컨테이너 */
+.fv-card {
+  position: relative;
+  background: var(--color-bg-card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--color-border-gold);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-grimoire);
+  padding: 38px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  transition: all 0.3s ease;
+}
+
+/* 모서리 고풍스러운 앤틱 골드 필리그리 장식 */
+.fv-card__corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-color: var(--color-gold-antique);
+  border-style: solid;
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+.fv-card__corner--tl {
+  top: 10px;
+  left: 10px;
+  border-width: 2px 0 0 2px;
+}
+
+.fv-card__corner--tr {
+  top: 10px;
+  right: 10px;
+  border-width: 2px 2px 0 0;
+}
+
+.fv-card__corner--bl {
+  bottom: 10px;
+  left: 10px;
+  border-width: 0 0 2px 2px;
+}
+
+.fv-card__corner--br {
+  bottom: 10px;
+  right: 10px;
+  border-width: 0 2px 2px 0;
+}
+
+.fv-card__section {
+  width: 100%;
+}
+
+.fv-card__separator {
+  position: relative;
+  text-align: center;
+  margin: 6px 0;
+}
+
+.fv-card__separator::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(212, 175, 55, 0.4) 25%,
+    rgba(212, 175, 55, 0.4) 75%,
+    transparent 100%
+  );
+  z-index: 0;
+}
+
+.fv-card__separator-rune {
+  position: relative;
+  display: inline-block;
+  background: #170d2c;
+  padding: 2px 14px;
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  color: var(--color-gold-antique);
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  z-index: 1;
+}
+
+/* 6. Shared UI - TextArea (고대 양피지 스타일) */
+.fv-textarea-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.fv-textarea-label {
+  font-family: var(--font-serif);
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--color-text-gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+}
+
+.fv-textarea {
+  width: 100%;
+  padding: 18px 20px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-parchment);
+  border: 1px solid var(--color-border-gold);
+  color: #fffbeb;
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  line-height: 1.7;
+  resize: vertical;
+  min-height: 120px;
+  outline: none;
+  transition: all 0.25s ease;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.fv-textarea::placeholder {
+  color: var(--color-text-dim);
+  font-style: italic;
+  font-family: var(--font-body);
+}
+
+.fv-textarea:focus {
+  border-color: var(--color-gold-bright);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5),
+              0 0 18px rgba(245, 158, 11, 0.35);
+  background: rgba(22, 12, 45, 0.9);
+}
+
+.fv-textarea-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  color: var(--color-text-dim);
+  min-height: 20px;
+}
+
+.fv-textarea-helper {
+  color: var(--color-text-dim);
+}
+
+.fv-textarea-counter {
+  font-family: var(--font-serif);
+  color: var(--color-gold-antique);
+  margin-left: auto;
+}
+
+/* 7. Shared UI - Button (마법 룬 & 강력한 호버 효과) */
+.fv-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(254, 240, 138, 0.6);
+  cursor: pointer !important;
+  transition: all 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+  outline: none;
+  user-select: none;
+  z-index: 1;
+}
+
+/* Primary Button (황금빛 마법 인장) */
+.fv-button--primary {
+  background: linear-gradient(
+    135deg,
+    #78350f 0%,
+    #d97706 25%,
+    #f59e0b 60%,
+    #b45309 100%
+  );
+  color: #1e0b04;
+  box-shadow: 
+    0 4px 18px rgba(180, 83, 9, 0.55),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.fv-button__content {
+  position: relative;
+  z-index: 2;
+  font-size: 1.08rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #2b1103;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  pointer-events: none;
+}
+
+/* 버튼 쉬머(Shimmer) 라이트 효과 */
+.fv-button__shimmer {
+  position: absolute;
+  top: 0;
+  left: -130%;
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    transparent 100%
+  );
+  transform: skewX(-25deg);
+  transition: all 0.6s ease;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ★★★ 버튼 호버 효과 (확실하고 강렬한 황금빛 마법 반응) ★★★ */
+.fv-button--primary:hover:not(:disabled) {
+  transform: translateY(-4px) scale(1.04);
+  background: linear-gradient(
+    135deg,
+    #92400e 0%,
+    #f59e0b 20%,
+    #fef08a 50%,
+    #fbbf24 80%,
+    #d97706 100%
+  );
+  border-color: #ffffff;
+  box-shadow: 
+    0 0 35px rgba(245, 158, 11, 0.95),
+    0 0 70px rgba(251, 191, 36, 0.55),
+    0 12px 28px rgba(0, 0, 0, 0.75),
+    inset 0 0 16px rgba(255, 255, 255, 0.85);
+  cursor: pointer !important;
+}
+
+.fv-button--primary:hover:not(:disabled) .fv-button__content {
+  color: #1a0500;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 0 4px rgba(251, 191, 36, 0.8);
+  transform: scale(1.02);
+}
+
+.fv-button--primary:hover:not(:disabled) .fv-button__shimmer {
+  left: 160%;
+  transition: left 0.75s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.fv-button--primary:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 
+    0 2px 12px rgba(245, 158, 11, 0.6),
+    inset 0 3px 8px rgba(0, 0, 0, 0.5);
+}
+
+.fv-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  filter: grayscale(0.5);
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.fv-button--lg {
+  padding: 16px 36px;
+  font-size: 1.08rem;
+}
+
+.fv-button__spinner-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+  color: #1e0b04;
+  font-weight: 800;
+}
+
+.fv-button__spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(43, 17, 3, 0.3);
+  border-top-color: #2b1103;
+  border-radius: 50%;
+  animation: fv-spin 0.8s linear infinite;
+}
+
+/* 8. Shared UI - Loading (오라클 수정구 & 마법진 링) */
+.fv-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 20px;
+  text-align: center;
+  gap: 18px;
+}
+
+.fv-loading__orb-container {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fv-loading__magic-circle {
+  position: absolute;
+  border-radius: 50%;
+  border-style: dashed;
+  pointer-events: none;
+}
+
+.fv-loading__magic-circle--outer {
+  width: 104px;
+  height: 104px;
+  border-width: 2px;
+  border-color: rgba(245, 158, 11, 0.6);
+  animation: fv-spin 6s linear infinite;
+}
+
+.fv-loading__magic-circle--inner {
+  width: 82px;
+  height: 82px;
+  border-width: 1.5px;
+  border-color: rgba(168, 85, 247, 0.5);
+  animation: fv-spin-reverse 4s linear infinite;
+}
+
+.fv-loading__orb-glow {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.7) 0%, rgba(147, 51, 234, 0.4) 50%, transparent 80%);
+  animation: fv-pulse 2.2s ease-in-out infinite;
+}
+
+.fv-loading__orb {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fef08a 0%, #a855f7 45%, #2e1065 95%);
+  box-shadow: 
+    0 0 30px rgba(245, 158, 11, 0.7),
+    inset 0 0 15px rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fv-float 3s ease-in-out infinite;
+}
+
+.fv-loading__eye {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+}
+
+.fv-loading__message {
+  font-family: var(--font-serif);
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--color-gold-bright);
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+  margin-top: 6px;
+}
+
+.fv-loading__sub-message {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  color: var(--color-text-muted);
+}
+
+/* 9. Feature - User Input (생년월일/성별 & 질문 입력) */
+.fv-user-input {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* 생년월일 & 성별 입력 섹션 */
+.fv-birth-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 20px;
+  background: rgba(18, 9, 36, 0.55);
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.fv-birth-section__header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fv-birth-section__title {
+  font-family: var(--font-serif);
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--color-gold-bright);
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}
+
+.fv-birth-section__hint {
+  font-size: 0.8rem;
+  color: var(--color-text-dim);
+}
+
+/* 생년, 월, 일 3열 그리드 */
+.fv-birth-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.fv-select-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fv-select-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.fv-select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(12, 6, 24, 0.85);
+  border: 1px solid var(--color-border-gold);
+  color: #fffbeb;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f59e0b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+
+.fv-select option {
+  background: #190d30;
+  color: #fffbeb;
+}
+
+.fv-select:focus {
+  border-color: var(--color-gold-bright);
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.4);
+}
+
+.fv-select--error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* 성별 선택 토글 */
+.fv-gender-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fv-gender-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.fv-gender-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.fv-gender-buttons--error .fv-gender-btn {
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+.fv-gender-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  background: rgba(14, 7, 28, 0.7);
+  border: 1px solid var(--color-border-gold);
+  color: var(--color-text-muted);
+  font-family: var(--font-serif);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+.fv-gender-btn:hover:not(:disabled) {
+  border-color: var(--color-gold-antique);
+  color: #fffbeb;
+  background: rgba(30, 15, 58, 0.85);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.25);
+}
+
+.fv-gender-btn--active {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(168, 85, 247, 0.25) 100%) !important;
+  border-color: var(--color-gold-bright) !important;
+  color: var(--color-gold-bright) !important;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.4), inset 0 0 10px rgba(255, 215, 0, 0.2) !important;
+  font-weight: 800;
+}
+
+.fv-user-input__field {
+  width: 100%;
+}
+
+.fv-user-input__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.fv-user-input__actions .fv-button {
+  min-width: 220px;
+}
+
+/* 10. Feature - Fortune Result (오라클 고서 양피지 카드) */
+.fv-fortune-result {
+  width: 100%;
+}
+
+.fv-fortune-result--loading {
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 초기 안내 상태 */
+.fv-fortune-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 34px 20px;
+  gap: 12px;
+  border: 1px dashed rgba(212, 175, 55, 0.3);
+  border-radius: var(--radius-md);
+  background: rgba(18, 9, 36, 0.45);
+}
+
+.fv-fortune-placeholder__icon-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.fv-fortune-placeholder__icon {
+  font-size: 2.3rem;
+  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.6));
+}
+
+.fv-fortune-placeholder__sparkle {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  font-size: 1.2rem;
+  animation: fv-pulse 1.8s infinite;
+}
+
+.fv-fortune-placeholder__title {
+  font-family: var(--font-serif);
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--color-text-gold);
+  letter-spacing: 0.03em;
+}
+
+.fv-fortune-placeholder__desc {
+  font-family: var(--font-body);
+  font-size: 0.94rem;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  max-width: 500px;
+  word-break: keep-all;
+}
+
+.fv-fortune-placeholder__runes {
+  margin-top: 8px;
+  font-family: var(--font-serif);
+  font-size: 0.78rem;
+  letter-spacing: 0.25em;
+  color: var(--color-gold-antique);
+  opacity: 0.6;
+}
+
+/* 결과 카드 (고대 비전서 양피지 스크롤) */
+.fv-fortune-card {
+  position: relative;
+  background: linear-gradient(
+    145deg,
+    rgba(34, 15, 60, 0.92) 0%,
+    rgba(22, 10, 42, 0.95) 100%
+  );
+  border: 1px solid var(--color-border-gold-bright);
+  border-radius: var(--radius-md);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 
+    0 12px 35px rgba(0, 0, 0, 0.7),
+    0 0 25px rgba(245, 158, 11, 0.18),
+    inset 0 0 20px rgba(168, 85, 247, 0.15);
+  animation: fv-scroll-reveal 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.fv-fortune-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+  padding-bottom: 16px;
+}
+
+.fv-fortune-card__seal-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fv-fortune-card__seal {
+  font-family: var(--font-serif);
+  font-size: 0.76rem;
+  letter-spacing: 0.22em;
+  color: var(--color-gold-antique);
+}
+
+.fv-fortune-card__badge {
+  padding: 4px 12px;
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--color-gold-bright);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  border-radius: var(--radius-full);
+  font-family: var(--font-serif);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.fv-fortune-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: #fef08a;
+  background: rgba(26, 12, 48, 0.6);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  font-family: var(--font-serif);
+}
+
+.fv-fortune-card__meta span {
+  color: var(--color-gold-antique);
+  font-size: 0.8rem;
+}
+
+.fv-fortune-card__question {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  color: #e9d5ff;
+  font-style: italic;
+  padding: 6px 12px;
+  background: rgba(15, 7, 30, 0.5);
+  border-left: 3px solid var(--color-gold-main);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.fv-fortune-card__question strong {
+  font-family: var(--font-serif);
+  color: var(--color-gold-bright);
+  margin-right: 6px;
+  font-style: normal;
+}
+
+.fv-fortune-card__body {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.fv-fortune-card__icon-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(26, 12, 48, 0.8);
+  border: 1px solid var(--color-border-gold);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+}
+
+.fv-fortune-card__icon {
+  font-size: 2rem;
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.6));
+}
+
+.fv-fortune-card__icon-label {
+  font-family: var(--font-serif);
+  font-size: 0.65rem;
+  color: var(--color-gold-antique);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.fv-fortune-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 1.02rem;
+  line-height: 1.85;
+  color: #fffbeb;
+  word-break: keep-all;
+}
+
+/* 마크다운 렌더링 스타일 (볼드체, 리스트, 헤딩, 인용구, 개행) */
+.fv-markdown-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 1.02rem;
+  line-height: 1.85;
+  color: #fffbeb;
+  word-break: keep-all;
+  flex: 1;
+}
+
+/* 문단 및 개행 */
+.fv-markdown-content p {
+  margin-bottom: 8px;
+  line-height: 1.85;
+}
+
+.fv-markdown-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* 볼드체 강조 (찬란한 황금빛) */
+.fv-markdown-content strong,
+.fv-markdown-content b {
+  font-family: var(--font-serif);
+  color: #fde047;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.45);
+}
+
+/* 이탤릭 */
+.fv-markdown-content em,
+.fv-markdown-content i {
+  color: #e9d5ff;
+  font-style: italic;
+}
+
+/* 헤딩 (소제목) */
+.fv-markdown-content h1,
+.fv-markdown-content h2,
+.fv-markdown-content h3,
+.fv-markdown-content h4 {
+  font-family: var(--font-serif);
+  color: var(--color-gold-bright);
+  letter-spacing: 0.04em;
+  margin-top: 14px;
+  margin-bottom: 8px;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+}
+
+.fv-markdown-content h1 { font-size: 1.35rem; }
+.fv-markdown-content h2 { font-size: 1.22rem; }
+.fv-markdown-content h3 { font-size: 1.12rem; border-bottom: 1px dashed rgba(212, 175, 55, 0.3); padding-bottom: 6px; }
+.fv-markdown-content h4 { font-size: 1.02rem; }
+
+/* 순서 없는 리스트 (✦ 마법 글머리 기호) */
+.fv-markdown-content ul {
+  list-style: none;
+  padding-left: 4px;
+  margin: 6px 0 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fv-markdown-content ul li {
+  position: relative;
+  padding-left: 22px;
+  line-height: 1.75;
+}
+
+.fv-markdown-content ul li::before {
+  content: '✦';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--color-gold-main);
+  font-size: 0.85rem;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+}
+
+/* 순서 있는 리스트 */
+.fv-markdown-content ol {
+  padding-left: 22px;
+  margin: 6px 0 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fv-markdown-content ol li {
+  line-height: 1.75;
+}
+
+.fv-markdown-content ol li::marker {
+  color: var(--color-gold-bright);
+  font-family: var(--font-serif);
+  font-weight: 700;
+}
+
+/* 인용구 (고서 잠언 스타일) */
+.fv-markdown-content blockquote {
+  margin: 10px 0;
+  padding: 12px 18px;
+  background: rgba(26, 12, 48, 0.7);
+  border-left: 4px solid var(--color-gold-main);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: #f3e8ff;
+  font-style: italic;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.fv-markdown-content blockquote p {
+  margin-bottom: 0;
+}
+
+/* 가로 구분선 */
+.fv-markdown-content hr {
+  border: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+  margin: 16px 0;
+}
+
+.fv-fortune-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(212, 175, 55, 0.25);
+}
+
+.fv-fortune-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* 공유 / 복사 액션 버튼 */
+.fv-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  background: rgba(30, 16, 56, 0.85);
+  border: 1px solid var(--color-border-gold);
+  color: var(--color-text-gold);
+  font-family: var(--font-serif);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer !important;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  user-select: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.fv-action-btn__icon {
+  font-size: 1rem;
+}
+
+.fv-action-btn:hover {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: var(--color-gold-bright);
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.5), 0 6px 14px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.fv-action-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* 복사 완료 시 에메랄드 & 황금빛 피드백 */
+.fv-action-btn--copied {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(245, 158, 11, 0.25) 100%) !important;
+  border-color: #34d399 !important;
+  color: #a7f3d0 !important;
+  box-shadow: 0 0 25px rgba(52, 211, 153, 0.6), inset 0 0 10px rgba(52, 211, 153, 0.3) !important;
+  animation: fv-pulse 1s ease-in-out;
+}
+
+.fv-fortune-card__reset-btn {
+  background: rgba(26, 12, 48, 0.7);
+  border: 1px solid var(--color-border-gold);
+  color: var(--color-gold-bright);
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  cursor: pointer !important;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+
+.fv-fortune-card__reset-btn:hover {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.35) 0%, rgba(217, 119, 6, 0.45) 100%);
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.7), 0 6px 16px rgba(0, 0, 0, 0.6);
+  transform: translateY(-3px) scale(1.03);
+}
+
+.fv-fortune-card__reset-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* 11. Footer */
+.fv-footer {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 10px;
+}
+
+.fv-footer__quote {
+  font-family: var(--font-serif);
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--color-gold-antique);
+  opacity: 0.85;
+}
+
+.fv-footer__copy {
+  font-size: 0.78rem;
+  color: var(--color-text-dim);
+  letter-spacing: 0.05em;
+}
+
+/* 12. 키프레임 애니메이션 */
+@keyframes fv-flicker {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fv-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fv-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes fv-pulse {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.85;
+  }
+}
+
+@keyframes fv-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes fv-gold-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 2px 12px rgba(212, 175, 55, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 2px 20px rgba(255, 215, 0, 0.75));
+  }
+}
+
+@keyframes fv-scroll-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 13. 모바일 반응형 */
+@media (max-width: 640px) {
+  .fv-home-page {
+    padding: 28px 16px;
+  }
+
+  .fv-header__title {
+    font-size: 2.3rem;
+  }
+
+  .fv-card {
+    padding: 24px 18px;
+    gap: 22px;
+  }
+
+  .fv-user-input__actions .fv-button {
+    width: 100%;
+  }
+
+  .fv-fortune-card__body {
+    flex-direction: column;
+  }
+
+  .fv-birth-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fv-gender-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .fv-fortune-card__footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .fv-fortune-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .fv-action-btn,
+  .fv-fortune-card__reset-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
