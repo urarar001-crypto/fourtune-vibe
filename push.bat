@@ -1,8 +1,10 @@
 @echo off
 chcp 65001 > nul
-echo [Fortune Vibe] GitHub 저장소로 업로드를 시작합니다...
+echo [FORTUNNE's WHEEL] GitHub 저장소로 변경사항 커밋 및 업로드를 시작합니다...
 echo.
 
+git add -A
+git commit -m "feat: change title to FORTUNNE's WHEEL and add mystic wheel icon"
 git push -u origin main
 
 if %errorlevel% equ 0 (

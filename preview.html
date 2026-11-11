@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>오늘의 운세 — 마법사의 오라클 서재 (미리보기)</title>
+    <title>FORTUNNE's WHEEL — 마법사의 오라클 서재 (미리보기)</title>
     <!-- 신비로운 오라클 & 마법서 폰트 (Cinzel Decorative, Cinzel, Noto Serif KR) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,6 +24,53 @@
 
     <script type="text/babel">
       const { useState, useCallback, useMemo } = React;
+
+      // 0. Shared UI - MysticWheelIcon (신비스러운 운명의 수레바퀴 SVG)
+      const MysticWheelIcon = ({ className = '', size = 64 }) => (
+        <div className={`fv-mystic-wheel-wrap ${className}`} style={{ width: size, height: size }} aria-hidden="true">
+          <div className="fv-mystic-wheel-glow" />
+          <svg className="fv-mystic-wheel-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="wheelGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#fff7ed" />
+                <stop offset="25%" stopColor="#fef08a" />
+                <stop offset="50%" stopColor="#d4af37" />
+                <stop offset="75%" stopColor="#b45309" />
+                <stop offset="100%" stopColor="#fef08a" />
+              </linearGradient>
+              <radialGradient id="wheelCenterGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#fde047" stopOpacity="0.9" />
+                <stop offset="40%" stopColor="#d97706" stopOpacity="0.6" />
+                <stop offset="100%" stopColor="#7e22ce" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+            <g className="fv-wheel-spin-slow">
+              <circle cx="50" cy="50" r="46" stroke="url(#wheelGoldGrad)" strokeWidth="1.5" />
+              <circle cx="50" cy="50" r="42" stroke="url(#wheelGoldGrad)" strokeWidth="1" strokeDasharray="2 3" />
+              <circle cx="50" cy="5" r="2.2" fill="#ffd700" />
+              <circle cx="50" cy="95" r="2.2" fill="#ffd700" />
+              <circle cx="5" cy="50" r="2.2" fill="#ffd700" />
+              <circle cx="95" cy="50" r="2.2" fill="#ffd700" />
+              <circle cx="18.2" cy="18.2" r="1.8" fill="#fde047" />
+              <circle cx="81.8" cy="81.8" r="1.8" fill="#fde047" />
+              <circle cx="18.2" cy="81.8" r="1.8" fill="#fde047" />
+              <circle cx="81.8" cy="18.2" r="1.8" fill="#fde047" />
+              <line x1="50" y1="12" x2="50" y2="88" stroke="url(#wheelGoldGrad)" strokeWidth="1.5" />
+              <line x1="12" y1="50" x2="88" y2="50" stroke="url(#wheelGoldGrad)" strokeWidth="1.5" />
+              <line x1="23.1" y1="23.1" x2="76.9" y2="76.9" stroke="url(#wheelGoldGrad)" strokeWidth="1.2" />
+              <line x1="23.1" y1="76.9" x2="76.9" y2="23.1" stroke="url(#wheelGoldGrad)" strokeWidth="1.2" />
+              <circle cx="50" cy="50" r="28" stroke="url(#wheelGoldGrad)" strokeWidth="1.2" />
+            </g>
+            <g className="fv-wheel-spin-reverse">
+              <circle cx="50" cy="50" r="18" fill="url(#wheelCenterGlow)" />
+              <polygon points="50,34 61.3,38.7 66,50 61.3,61.3 50,66 38.7,61.3 34,50 38.7,38.7" stroke="url(#wheelGoldGrad)" strokeWidth="1.2" fill="none" />
+              <polygon points="50,31 55,45 69,50 55,55 50,69 45,55 31,50 45,45" fill="#ffd700" opacity="0.75" />
+            </g>
+            <circle cx="50" cy="50" r="4.5" fill="#fffbeb" />
+            <circle cx="50" cy="50" r="2" fill="#78350f" />
+          </svg>
+        </div>
+      );
 
       // 1. Shared UI - Button (마법 룬 & 강력한 호버 효과)
       const Button = ({
@@ -609,11 +656,15 @@
               <header className="fv-header">
                 <div className="fv-header__badge">
                   <span className="fv-header__badge-icon">🔮</span>
-                  <span>THE WIZARD'S SANCTUM · ASTROLOGICAL ORACLE</span>
+                  <span>THE WIZARD'S SANCTUM · WHEEL OF DESTINY</span>
+                </div>
+
+                <div className="fv-header__wheel-hero">
+                  <MysticWheelIcon size={76} />
                 </div>
 
                 <h1 className="fv-header__title">
-                  <span className="fv-text-gold-shine">오늘의 운세</span>
+                  <span className="fv-text-gold-shine">FORTUNNE's WHEEL</span>
                 </h1>
 
                 <div className="fv-header__divider">
@@ -625,7 +676,7 @@
                 <p className="fv-header__subtitle">
                   은은한 촛불과 고서 향기가 가득한 대마법사의 서재에 당도하셨습니다.
                   <br />
-                  당신의 탄생 별자리와 생년월일, 마음속 질문을 양피지에 새겨 오라클의 계시를 구하세요.
+                  천천히 회전하는 운명의 수레바퀴 앞에 당신의 생년월일과 마음속 질문을 바쳐보세요.
                 </p>
               </header>
 

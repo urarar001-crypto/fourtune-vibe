@@ -176,11 +176,68 @@ body {
   filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.8));
 }
 
+/* 신비스러운 운명의 수레바퀴 (Wheel of Fortune) 영웅 영역 */
+.fv-header__wheel-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px 0 2px 0;
+  animation: fv-float 4s ease-in-out infinite;
+}
+
+.fv-mystic-wheel-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  cursor: pointer;
+}
+
+.fv-mystic-wheel-glow {
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(253, 224, 71, 0.45) 0%,
+    rgba(245, 158, 11, 0.35) 40%,
+    rgba(147, 51, 234, 0.25) 65%,
+    transparent 80%
+  );
+  filter: blur(14px);
+  pointer-events: none;
+  animation: fv-pulse 3s ease-in-out infinite;
+}
+
+.fv-mystic-wheel-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.65)) drop-shadow(0 4px 18px rgba(0, 0, 0, 0.8));
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.5s ease;
+}
+
+.fv-mystic-wheel-wrap:hover .fv-mystic-wheel-svg {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 24px rgba(255, 215, 0, 0.9)) drop-shadow(0 0 40px rgba(168, 85, 247, 0.6));
+}
+
+.fv-wheel-spin-slow {
+  transform-origin: 50px 50px;
+  animation: fv-spin 28s linear infinite;
+}
+
+.fv-wheel-spin-reverse {
+  transform-origin: 50px 50px;
+  animation: fv-spin-reverse 16s linear infinite;
+}
+
 .fv-header__title {
   font-family: var(--font-title);
-  font-size: 3.2rem;
+  font-size: 3rem;
   font-weight: 900;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   line-height: 1.15;
   margin: 4px 0;
 }
@@ -1302,7 +1359,8 @@ body {
   }
 
   .fv-header__title {
-    font-size: 2.3rem;
+    font-size: 2.1rem;
+    letter-spacing: 0.04em;
   }
 
   .fv-card {

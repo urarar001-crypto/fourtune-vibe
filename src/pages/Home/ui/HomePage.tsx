@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { UserInput } from '@/features/User_Input'
 import { FortuneResult } from '@/features/Fortune_Result'
 import { useFortuneAI } from '@/shared/Lib'
+import { MysticWheelIcon } from '@/shared/UI'
 
 export const HomePage = () => {
   // 1. prompt: 사용자가 입력한 질문 텍스트
@@ -72,15 +73,20 @@ export const HomePage = () => {
       <div className="fv-bg-stars" />
 
       <main className="fv-main-container">
-        {/* 헤더 섹션: 마법사의 서재 & 오늘의 운세 타이틀 */}
+        {/* 헤더 섹션: 마법사의 서재 & FORTUNNE's WHEEL 타이틀 */}
         <header className="fv-header">
           <div className="fv-header__badge">
             <span className="fv-header__badge-icon">🔮</span>
-            <span>THE WIZARD'S SANCTUM · ASTROLOGICAL ORACLE</span>
+            <span>THE WIZARD'S SANCTUM · WHEEL OF DESTINY</span>
+          </div>
+
+          {/* 신비스러운 운명의 수레바퀴 (Wheel) 아이콘 */}
+          <div className="fv-header__wheel-hero">
+            <MysticWheelIcon size={76} />
           </div>
 
           <h1 className="fv-header__title">
-            <span className="fv-text-gold-shine">오늘의 운세</span>
+            <span className="fv-text-gold-shine">FORTUNNE's WHEEL</span>
           </h1>
 
           <div className="fv-header__divider">
@@ -92,7 +98,7 @@ export const HomePage = () => {
           <p className="fv-header__subtitle">
             은은한 촛불과 고서 향기가 가득한 대마법사의 서재에 당도하셨습니다.
             <br />
-            당신의 탄생 별자리와 생년월일, 마음속 질문을 양피지에 새겨 오라클의 계시를 구하세요.
+            천천히 회전하는 운명의 수레바퀴 앞에 당신의 생년월일과 마음속 질문을 바쳐보세요.
           </p>
         </header>
 
@@ -162,10 +168,10 @@ export const HomePage = () => {
         {/* 푸터 */}
         <footer className="fv-footer">
           <p className="fv-footer__quote">
-            "미래는 쓰여진 양피지가 아니라, 당신의 탄생 별빛과 의지가 빚어내는 조화입니다."
+            "운명의 수레바퀴는 끊임없이 돌지만, 그 방향의 키는 오직 당신의 영혼에 있습니다."
           </p>
           <p className="fv-footer__copy">
-            © 2026 오늘의 운세 · Grand Wizard's Arcane Oracle
+            © 2026 FORTUNNE's WHEEL · Grand Wizard's Arcane Oracle
           </p>
         </footer>
       </main>
